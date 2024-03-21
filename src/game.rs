@@ -1,13 +1,13 @@
+use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
+
 use crate::card::{Card, CardType, CardValue};
 use crate::player::{Dealer, Handed, Player, PlayerAction, PlayerState};
-use crate::{print_hand};
-
 
 #[derive(EnumIter, Debug, PartialEq, Clone, Copy)]
 pub enum GameState {
     Playing,
-    End
+    End,
 }
 
 pub struct Game {
@@ -15,20 +15,17 @@ pub struct Game {
     dealer: Dealer,
     deck: Vec<Card>,
     game_state: GameState,
-    rounds_played: u8
+    rounds_played: u8,
 }
 
 impl Game {
-
     pub fn new(deck: Vec<Card>) -> Self {
         Self {
             players: Vec::new(),
-            dealer: Dealer {
-                hand: Vec::new()
-            },
+            dealer: Dealer { hand: Vec::new() },
             deck,
             game_state: GameState::Playing,
-            rounds_played: 0
+            rounds_played: 0,
         }
     }
 
@@ -46,7 +43,7 @@ impl Game {
             CardValue::Ten => 10,
             CardValue::Jack => 10,
             CardValue::Queen => 10,
-            CardValue::King => 10
+            CardValue::King => 10,
         }
     }
 
@@ -56,16 +53,16 @@ impl Game {
 
     pub fn is_winner(&self, player: &Player) -> bool {
         if player.count(&self) == 21 {
-            return true
+            return true;
         }
-        return false
+        return false;
     }
 
     pub fn is_bust(&self, player: &Player) -> bool {
         if player.count(&self) > 21 {
-            return true
+            return true;
         }
-        return false
+        return false;
     }
 
     pub fn deal_cards(&mut self) {
@@ -144,8 +141,10 @@ impl Game {
         }
         if done {
             for i in 0..self.players.len() {
-                if self.players[i].state == PlayerState::Bust || self.players[i].state == PlayerState::Win {
-                    continue
+                if self.players[i].state == PlayerState::Bust
+                    || self.players[i].state == PlayerState::Win
+                {
+                    continue;
                 }
                 let player_count = self.players[i].count(&self);
                 if player_count > dealer_count {
@@ -196,4 +195,26 @@ impl Game {
     pub fn get_game_state(&self) -> GameState {
         self.game_state
     }
+}
+
+pub fn generate_deck() -> Vec<Card> {
+    let mut deck = Vec::new();
+    for card_type in CardType::iter() {
+        for card_value in CardValue::iter() {
+            deck.push(Card::new(card_type.clone(), card_value.clone()));
+        }
+    }
+    // shuffle
+    use rand::seq::SliceRandom;
+    use rand::thread_rng;
+    let mut rng = thread_rng();
+    deck.shuffle(&mut rng);
+    deck
+}
+
+pub fn print_hand(game: &Game, handed: &dyn Handed) {
+    for card in handed.get_hand() {
+        println!("{}", card);
+    }
+    println!("Total Value: {}", handed.count(game));
 }

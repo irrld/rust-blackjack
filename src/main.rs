@@ -1,28 +1,9 @@
+use crate::game::{generate_deck, Game, GameState};
+use crate::player::{Player, PlayerAction};
+
 mod card;
-mod player;
 mod game;
-
-use std::cmp::PartialEq;
-use strum::IntoEnumIterator;
-use crate::card::{Card, CardType};
-use crate::card::CardValue;
-use crate::game::{Game, GameState};
-use crate::player::{Handed, Player, PlayerAction};
-
-fn generate_deck() -> Vec<Card> {
-    let mut deck = Vec::new();
-    for card_type in CardType::iter() {
-        for card_value in CardValue::iter() {
-            deck.push(Card::new(card_type.clone(), card_value.clone()));
-        }
-    }
-    // shuffle
-    use rand::seq::SliceRandom;
-    use rand::thread_rng;
-    let mut rng = thread_rng();
-    deck.shuffle(&mut rng);
-    deck
-}
+mod player;
 
 trait PlayerController {
     fn get_action(&self, game: &Game) -> PlayerAction;
@@ -38,7 +19,7 @@ impl PlayerController for ConsolePlayerController {
         match input.trim() {
             "hit" => PlayerAction::Hit,
             "stand" => PlayerAction::Stand,
-            _ => PlayerAction::None
+            _ => PlayerAction::None,
         }
     }
 }
@@ -49,13 +30,6 @@ impl PlayerController for AllInPlayerController {
     fn get_action(&self, game: &Game) -> PlayerAction {
         PlayerAction::Hit
     }
-}
-
-fn print_hand(game: &Game, handed: &dyn Handed) {
-    for card in handed.get_hand() {
-        println!("{}", card);
-    }
-    println!("Total Value: {}", handed.count(game));
 }
 
 fn main() {

@@ -1,5 +1,5 @@
 use std::fmt;
-use strum::IntoEnumIterator;
+
 use strum_macros::EnumIter;
 
 #[derive(EnumIter, Debug, PartialEq, Clone, Copy)]
@@ -7,7 +7,7 @@ pub enum CardType {
     Spades,
     Hearts,
     Diamonds,
-    Clubs
+    Clubs,
 }
 
 #[repr(u8)]
@@ -25,13 +25,13 @@ pub enum CardValue {
     Ten,
     Jack,
     Queen,
-    King
+    King,
 }
 
 #[derive(Clone, Copy)]
 pub struct Card {
     pub card_type: CardType,
-    pub card_value: CardValue
+    pub card_value: CardValue,
 }
 
 impl Card {
