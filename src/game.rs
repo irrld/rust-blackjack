@@ -106,7 +106,14 @@ impl Game {
                     let card = self.pick_card();
                     self.players[i].add_card(card);
                     println!("{} hits and gets {}!", self.players[i].name, card);
-                    new_state = PlayerState::Playing;
+                    let player = self.players.get(i).unwrap();
+                    if self.is_winner(player) {
+                        new_state = PlayerState::Win;
+                    } else if self.is_bust(player) {
+                        new_state = PlayerState::Bust;
+                    } else {
+                        new_state = PlayerState::Playing;
+                    }
                 } else if action == PlayerAction::Stand {
                     new_state = PlayerState::Stand;
                 }
